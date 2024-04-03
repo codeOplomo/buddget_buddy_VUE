@@ -18,10 +18,12 @@
   <script>
 import { useRouter } from 'vue-router';
 import apiClient from '@/axios';
+import { useStore } from 'vuex';
 
 export default {
   setup() {
     const router = useRouter();
+    const store = useStore();
     const formData = {
       email: '',
       password: ''
@@ -30,10 +32,26 @@ export default {
     const login = async () => {
       try {
         const response = await apiClient.post('api/login', formData);
-        console.log(response.data);
-        router.push('/'); 
+        if (response.status === 200) {
+          const token = response.data.token;
+          // Login successful
+          console.log(response.data);
+          // Update isAuthenticated state in Vuex store
+          store.commit('setToken', token);
+          store.commit('setIsAuthenticated', true);
+          localStorage.setItem('token', token);
+
+          console.log('IsAuthenticated:', store.state.auth.isAuthenticated);
+
+          // Redirect to home page
+          router.push('/');
+        } else {
+          // Handle other response statuses, if needed
+          console.error('Login failed: Unexpected response status');
+        }
       } catch (error) {
-        console.error(error.response.data);
+        // Handle login error
+        console.error('Login failed:', error);
       }
     };
 

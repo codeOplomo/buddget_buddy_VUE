@@ -21,9 +21,7 @@
 
 
 <script>
-import axios from 'axios';
-
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
+import apiClient from '@/axios';
 
 export default {
     data() {
@@ -37,7 +35,14 @@ export default {
     },
     methods: {
         submitExpense() {
-            axios.post('/api/expenses', this.expense)
+            const token = this.$store.state.auth.token; // Assuming you store the token in your Vuex store
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+
+            apiClient.post('api/expenses', this.expense, config)
                 .then(response => {
                     console.log('Expense submitted:', response.data.expenses);
                 })
@@ -45,6 +50,7 @@ export default {
                     console.error('Error submitting expense:', error.response.data.message);
                 });
         }
+
     }
 }
 </script>

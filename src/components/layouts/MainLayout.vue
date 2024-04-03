@@ -4,10 +4,10 @@
             <h1>Buddget Buddy</h1>
             <nav>
                 <router-link to="/">Home</router-link>
-                <router-link v-if="!isAuthenticated" to="/register">Register</router-link>
-                <router-link v-if="!isAuthenticated" to="/login">Login</router-link>
-                <router-link v-if="isAuthenticated" to="/expenses/create">Create Expense</router-link>
-                <router-link v-if="isAuthenticated" @click="logout" to="#">Logout</router-link>
+                <router-link v-show="!isAuthenticated" to="/register">Register</router-link>
+                <router-link v-show="!isAuthenticated" to="/login">Login</router-link>
+                <router-link v-show="isAuthenticated" to="/expenses/create">Create Expense</router-link>
+                <router-link v-show="isAuthenticated" @click="logout" to="#">Logout</router-link>
             </nav>
         </header>
 
@@ -26,15 +26,15 @@
 <script>
 export default {
     name: 'MainLayout',
-        computed: {
+    computed: {
         isAuthenticated() {
-          return this.$store.state.auth.isAuthenticated;
-        }
-      },
+        return this.$store.state.auth.isAuthenticated;
+    }
+    },
     methods: {
         logout() {
             this.$store.dispatch('logout');
-        }
+        },
     }
 }
 </script>

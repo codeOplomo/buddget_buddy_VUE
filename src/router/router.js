@@ -13,7 +13,7 @@ const router = createRouter({
       path: '/expenses/create',
       name: 'CreateExpense',
       component: () => import('@/components/expenses/ExpenseForm.vue'),
-      meta: { requiresAuth: true } // Add meta field for routes that require authentication
+      meta: { requiresAuth: true } 
     },
     {
       path: '/register',
@@ -23,6 +23,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
+      meta: { requiresGuest: true },
       component: () => import('@/components/auth/LoginForm.vue'),
     },
   ]
@@ -30,18 +31,22 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = store.state.auth.isAuthenticated;
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
 
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (requiresAuth && !isAuthenticated) {
     // If the route requires authentication and the user is not authenticated,
     // redirect to the login page
-    if (!isAuthenticated) {
-      next('/login');
-    } else {
-      next();
-    }
+    next('/login');
+  } else if (requiresGuest && isAuthenticated) {
+    // If the route requires a guest (unauthenticated user) and the user is authenticated,
+    // redirect to the home page
+    next('/');
   } else {
+    // Otherwise, allow the navigation to proceed
     next();
   }
 });
+
 
 export default router;
